@@ -1,0 +1,6 @@
+GET /health HTTP/1.1
+Host: api.shop.test
+X-Extra: start
+ hidden-flag: yes
+Content-Length: 0
+
