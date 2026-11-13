@@ -43,14 +43,18 @@ def main(argv: list[str] | None = None) -> int:
 
         try:
             report = analyze(raw)
-        except NotImplementedError as exc:
-            print(str(exc), file=sys.stderr)
+        except Exception as exc:
+            print(f"analyze failed: {exc}", file=sys.stderr)
             return 2
-        Path(args.report).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.report).write_text(
-            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
+        try:
+            Path(args.report).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.report).write_text(
+                json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+        except OSError as exc:
+            print(f"failed to write report: {exc}", file=sys.stderr)
+            return 2
         decision = str(report.get("decision", "")).lower()
         if decision == "allow":
             return 0
